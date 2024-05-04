@@ -141,7 +141,7 @@ def find_similar_videos(query_image, directory, k=3):
             # lấy ra độ tương đồng lớn nhất trong 1 video
             max_similarity_each_video = max(similarities)
             # Thêm vào danh sách cặp (điểm số, tên tệp video)
-            top_videos.append((max_similarity_each_video, video_file))
+            top_videos.append((max_similarity_each_video, video_file[:-4]))
     # Sắp xếp danh sách theo điểm số và lấy ra 3 cặp đầu tiên
     top_videos.sort(reverse=True)
     top_3_videos = top_videos[:3]
