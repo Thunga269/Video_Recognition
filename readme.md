@@ -1,4 +1,5 @@
 1. **Trích rút đặc trưng** 
+
 directory_path = r'D:\thầy Hóa\dataset' là đường dẫn folder video dạng sau:
 
 dataset
@@ -36,6 +37,7 @@ dataset
 read_files_in_directory(directory_path)
 
 2. **Tìm kiếm video**
+
 query_image là ảnh đầu vào
 
 directory_feature = r'D:\thầy Hóa\features'  là đường dẫn folder video dạng sau:
