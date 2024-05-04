@@ -4,35 +4,35 @@ directory_path = r'D:\thầy Hóa\dataset' là đường dẫn folder video dạ
 
 dataset
 
-├── animals
+    ├── animals
 
-│ └── animals
+        │ └── animals
 
-│ └── v1_animal.mp4
+            │ └── v1_animal.mp4
 
-├── flowers
+    ├── flowers
 
-│ └── flowers
+        │ └── flowers
 
-│ └── v1_flower.mp4
+            │ └── v1_flower.mp4
 
-├── foods
+    ├── foods
 
-│ └── foods
+        │ └── foods
 
-│ └── v1_food.mp4
+            │ └── v1_food.mp4
 
-├── humans
+    ├── humans
 
-│ └── humans
+        │ └── humans
 
-│ └── v1_human.mp4
+            │ └── v1_human.mp4
 
-└── natures
+    └── natures
 
-└── natures
+        │ └─ natures
 
-└── v1_nature.mp4
+            │ └── v1_nature.mp4
 
 read_files_in_directory(directory_path)
 
@@ -44,24 +44,24 @@ directory_feature = r'D:\thầy Hóa\features'  là đường dẫn folder video
 
 features
 
-├── animals
+    ├── animals
 
-│ └── v1_animal.mp4.npy
+        │ └── v1_animal.mp4.npy
 
-├── flowers
+    ├── flowers
 
-│ └── v1_flower.mp4.npy
+        │ └── v1_flower.mp4.npy
 
-├── foods
+    ├── foods
 
-│ └── v1_food.mp4.npy
+        │ └── v1_food.mp4.npy
 
-├── humans
+    ├── humans
 
-│ └── v1_human.mp4.npy
+        │ └── v1_human.mp4.npy
 
-└── natures
+    └── natures
 
-└── v1_fnature.mp4.npy
+        └── v1_fnature.mp4.npy
 
 similar_videos_indices = find_similar_videos(query_image, directory_feature, k = 3)
