@@ -5,25 +5,18 @@ import matplotlib.pyplot as plt
 
 def extract_surf_features(frame, max_kpt):
     # Khởi tạo bộ trích xuất đặc trưng SURF
-    sirf = cv2.SIFT_create()
-
+    sirf = cv2.SIFT_create(nfeatures=max_kpt)
     # Tìm key points và descriptors của ảnh
     keypoints, descriptors = sirf.detectAndCompute(frame, None)
+    print(descriptors.shape)
     #Nếu đặc trưng là None
     if descriptors is None:
         descriptors = np.empty((0, 128), dtype=np.float32)
-        
-    # Giảm số lượng keypoints nếu vượt quá ngưỡng
+
+    # Nếu số lượng keypoint nhiều hơn 1000, thì lấy 1000 kpt đầu tiên
     if len(keypoints) > max_kpt:
-        # Sắp xếp các keypoints theo độ quan trọng (response)
-        keypoints = sorted(keypoints, key=lambda x: x.response, reverse=True)[:max_kpt]
-
-        # Trích xuất descriptors của các keypoints đã chọn
-        selected_descriptors = []
-        for keypoint in keypoints:
-            selected_descriptors.append(descriptors[keypoints.index(keypoint)])
-
-        descriptors = np.array(selected_descriptors) #[the number of keypoints, 128]
+        keypoints = keypoints[:max_kpt]
+        descriptors = descriptors[:max_kpt, :]
     
     # Nếu số lượng keypoints ít hơn max_kpt, thêm các số 0 vào các descriptors
     if len(keypoints) < max_kpt:
@@ -34,8 +27,8 @@ def extract_surf_features(frame, max_kpt):
 
 def read_video(name_video, video_path, max_kpt = 1000, frame_skip = 24):
     
-    # if os.path.exists(f'features/{name_video}.npy'):
-    #     return
+    if os.path.exists(f'feature_new/{name_video}.npy'):
+        return
     # Mở video
     cap = cv2.VideoCapture(video_path)
     # Đọc chiều dài và chiều rộng của video
@@ -74,7 +67,7 @@ def read_video(name_video, video_path, max_kpt = 1000, frame_skip = 24):
     cv2.destroyAllWindows()
     print(frame_count)
    
-    np.save(f'features/{name_video}.npy', np.array(all_descriptors))
+    np.save(f'feature_new/{name_video}.npy', np.array(all_descriptors))
 
 
 def read_files_in_directory(directory):
@@ -98,9 +91,9 @@ def read_files_in_directory(directory):
             read_video(filename+'/'+video_file, rf"{video_path}")
 
 
-# directory_path = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\dataset'
+directory_path = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\dataset'
 # read_files_in_directory(directory_path) #trích xuất đặc trưng
-# read_video('v22_animal.mp4',r'dataset\flowers\flowers\v22_flower.mp4', max_kpt = 1000, frame_skip = 24)
+# read_video('v1_animal.mp4',r'dataset\animals\animals\v1_animal.mp4', max_kpt = 1000, frame_skip = 24)
 
 #################### STAGE 2 ############################
 
@@ -108,6 +101,7 @@ def resize_image(image, width, height):
     # Resize ảnh về kích thước mới
     resized_image = cv2.resize(image, (width, height))
     return resized_image
+
 
 def cosine_similarity(A, B): 
     '''
@@ -126,6 +120,8 @@ def find_similar_videos(query_image, directory, k=3):
     img_cropped = resize_image(query_image, 1920, 1080)
     #trích xuất đặc trưng của ảnh đầu vào
     kpt, feature_img = extract_surf_features(img_cropped, max_kpt=1000)
+    # print(feature_img)
+    # feature_img = min_max_normalize(feature_img)
     for filename in os.listdir(directory):
         filepath = os.path.join(directory, filename)
         for video_file in os.listdir(filepath):
@@ -135,11 +131,12 @@ def find_similar_videos(query_image, directory, k=3):
             # Tính toán độ tương đồng giữa ảnh đầu vào và mỗi frame của 1 video
             similarities = []
             for video_feature in video_features:
+                # video_feature = min_max_normalize(video_feature)
                 similarity = cosine_similarity(feature_img.flatten(), video_feature.flatten())
                 similarities.append(similarity)
 
             # lấy ra độ tương đồng lớn nhất trong 1 video
-            max_similarity_each_video = max(similarities)
+            max_similarity_each_video = np.max(similarities)
             # Thêm vào danh sách cặp (điểm số, tên tệp video)
             top_videos.append((max_similarity_each_video, video_file[:-4]))
     # Sắp xếp danh sách theo điểm số và lấy ra 3 cặp đầu tiên
@@ -148,8 +145,8 @@ def find_similar_videos(query_image, directory, k=3):
     return top_3_videos
 
 # Đường dẫn đến các video và ảnh đầu vào
-directory_feature = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\features'
-query_image = cv2.imread(r'img test\1.jpg')
+directory_feature = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\feature_new'
+query_image = cv2.imread(r"img test\animal\chuot.jpg")
 
 # Hiển thị ảnh sau khi cắt
 # plt.imshow(cv2.cvtColor(img_cropped, cv2.COLOR_BGR2RGB))
