@@ -27,7 +27,7 @@ def extract_surf_features(frame, max_kpt):
 
 def read_video(name_video, video_path, max_kpt = 1000, frame_skip = 24):
     
-    if os.path.exists(f'feature_new/{name_video}.npy'):
+    if os.path.exists(f'feature_old/{name_video}.npy'):
         return
     # Mở video
     cap = cv2.VideoCapture(video_path)
@@ -67,7 +67,7 @@ def read_video(name_video, video_path, max_kpt = 1000, frame_skip = 24):
     cv2.destroyAllWindows()
     print(frame_count)
    
-    np.save(f'feature_new/{name_video}.npy', np.array(all_descriptors))
+    # np.save(f'feature_old/{name_video}.npy', np.array(all_descriptors))
 
 
 def read_files_in_directory(directory):
@@ -84,24 +84,47 @@ def read_files_in_directory(directory):
     # Lặp qua tất cả các tệp trong thư mục và in ra tên của chúng
     for filename in os.listdir(directory):
         filepath = os.path.join(directory, filename)
-        filepath2 = os.path.join(filepath, filename)
-        for video_file in os.listdir(filepath2):
-            video_path = os.path.join(filepath2, video_file) # đường dẫn file
-            print(video_path) 
-            read_video(filename+'/'+video_file, rf"{video_path}")
+        # filepath2 = os.path.join(filepath, filename)
+        # for video_file in os.listdir(filepath):
+        # video_path = os.path.join(filepath, video_file) # đường dẫn file
+        print(filepath) 
+        read_video(filename, rf"{filepath}")
 
 
-directory_path = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\dataset'
+directory_path = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\cats'
 # read_files_in_directory(directory_path) #trích xuất đặc trưng
-# read_video('v1_animal.mp4',r'dataset\animals\animals\v1_animal.mp4', max_kpt = 1000, frame_skip = 24)
+read_video('v1_animal.mp4',r'cats\v110_cat.mp4', max_kpt = 1000, frame_skip = 24)
 
 #################### STAGE 2 ############################
 
+# def resize_image(image, width, height):
+#     # Resize ảnh về kích thước mới
+#     resized_image = cv2.resize(image, (width, height))
+#     return resized_image
 def resize_image(image, width, height):
-    # Resize ảnh về kích thước mới
-    resized_image = cv2.resize(image, (width, height))
-    return resized_image
+    # Lấy kích thước hiện tại của ảnh
+    print(image)
+    h, w = image.shape[:2]
 
+    # Tính toán tỉ lệ và kích thước mới
+    scale = min(width / w, height / h)
+    new_w = int(w * scale)
+    new_h = int(h * scale)
+
+    # Resize ảnh
+    resized_image = cv2.resize(image, (new_w, new_h))
+
+    # Tạo ảnh nền với kích thước mới và màu đen
+    result_image = np.zeros((height, width, 3), dtype=np.uint8)
+
+    # Tính toán vị trí để đặt ảnh đã resize vào ảnh nền
+    x_offset = (width - new_w) // 2
+    y_offset = (height - new_h) // 2
+
+    # Đặt ảnh đã resize vào giữa ảnh nền
+    result_image[y_offset:y_offset + new_h, x_offset:x_offset + new_w] = resized_image
+
+    return result_image
 
 def cosine_similarity(A, B): 
     '''
@@ -116,8 +139,8 @@ def cosine_similarity(A, B):
 
 def find_similar_videos(query_image, directory, k=3):
     top_videos = []
-    #tiền xử lý video, cắt video theo chiều dài/ rộng cố định
-    img_cropped = resize_image(query_image, 1920, 1080)
+    #tiền xử lý ảnh video theo chiều dài/ rộng cố định
+    img_cropped = resize_image(query_image, 1280, 720)
     #trích xuất đặc trưng của ảnh đầu vào
     kpt, feature_img = extract_surf_features(img_cropped, max_kpt=1000)
     # print(feature_img)
@@ -145,8 +168,8 @@ def find_similar_videos(query_image, directory, k=3):
     return top_3_videos
 
 # Đường dẫn đến các video và ảnh đầu vào
-directory_feature = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\feature_new'
-query_image = cv2.imread(r"img test\animal\chuot.jpg")
+# directory_feature = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\feature_new'
+# query_image = cv2.imread(r"img test\flowers\hoa.jpg")
 
 # Hiển thị ảnh sau khi cắt
 # plt.imshow(cv2.cvtColor(img_cropped, cv2.COLOR_BGR2RGB))
@@ -154,6 +177,6 @@ query_image = cv2.imread(r"img test\animal\chuot.jpg")
 # plt.show()
 
 # Tìm ra 3 video có độ tương đồng lớn nhất với ảnh đầu vào
-similar_videos_indices = find_similar_videos(query_image, directory_feature, k = 3)
-print("video tương đồng lớn nhất:")
-print(similar_videos_indices)
+# similar_videos_indices = find_similar_videos(query_image, directory_feature, k = 3)
+# print("video tương đồng lớn nhất:")
+# print(similar_videos_indices)
