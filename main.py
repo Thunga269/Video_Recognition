@@ -93,7 +93,7 @@ def read_files_in_directory(directory):
 
 directory_path = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\cats'
 # read_files_in_directory(directory_path) #trích xuất đặc trưng
-read_video('v1_animal.mp4',r'cats\v110_cat.mp4', max_kpt = 1000, frame_skip = 24)
+# read_video('v1_animal.mp4',r'cats\v110_cat.mp4', max_kpt = 1000, frame_skip = 24)
 
 #################### STAGE 2 ############################
 
@@ -101,6 +101,7 @@ read_video('v1_animal.mp4',r'cats\v110_cat.mp4', max_kpt = 1000, frame_skip = 24
 #     # Resize ảnh về kích thước mới
 #     resized_image = cv2.resize(image, (width, height))
 #     return resized_image
+
 def resize_image(image, width, height):
     # Lấy kích thước hiện tại của ảnh
     print(image)
@@ -137,14 +138,26 @@ def cosine_similarity(A, B):
     similarity = dot_product / (norm_A * norm_B)
     return similarity
 
+def save_img_with_kpt(query_image):
+    #tiền xử lý ảnh video theo chiều dài/ rộng cố định
+    img_cropped = resize_image(query_image, 1280, 720)
+    #trích xuất đặc trưng của ảnh đầu vào
+    kpt, feature_img = extract_surf_features(img_cropped, max_kpt=1000)
+    # Vẽ các keypoints lên ảnh
+    frame_with_keypoints = cv2.drawKeypoints(img_cropped, kpt, None)
+    # Hiển thị ảnh đã được vẽ keypoints
+    cv2.imshow('Ảnh đã được vẽ keypoint', frame_with_keypoints)
+    # Lưu ảnh đã vẽ keypoints ra file
+    cv2.imwrite('img test/anh_da_ve_keypoints.jpg', frame_with_keypoints)
+
 def find_similar_videos(query_image, directory, k=3):
     top_videos = []
     #tiền xử lý ảnh video theo chiều dài/ rộng cố định
     img_cropped = resize_image(query_image, 1280, 720)
     #trích xuất đặc trưng của ảnh đầu vào
     kpt, feature_img = extract_surf_features(img_cropped, max_kpt=1000)
+
     # print(feature_img)
-    # feature_img = min_max_normalize(feature_img)
     for filename in os.listdir(directory):
         filepath = os.path.join(directory, filename)
         for video_file in os.listdir(filepath):
@@ -168,15 +181,19 @@ def find_similar_videos(query_image, directory, k=3):
     return top_3_videos
 
 # Đường dẫn đến các video và ảnh đầu vào
-# directory_feature = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\feature_new'
-# query_image = cv2.imread(r"img test\flowers\hoa.jpg")
+directory_feature = r'D:\Data_2023\kỳ 2 năm 4\thầy Hóa\feature_new'
+query_image = cv2.imread(r"img test\animals\meo.jpg")
 
 # Hiển thị ảnh sau khi cắt
 # plt.imshow(cv2.cvtColor(img_cropped, cv2.COLOR_BGR2RGB))
 # plt.axis('off')  # Tắt trục
 # plt.show()
 
+#save ảnh sau khi vẽ các keypoints
+save_img_with_kpt(query_image)
+
 # Tìm ra 3 video có độ tương đồng lớn nhất với ảnh đầu vào
 # similar_videos_indices = find_similar_videos(query_image, directory_feature, k = 3)
 # print("video tương đồng lớn nhất:")
 # print(similar_videos_indices)
+
