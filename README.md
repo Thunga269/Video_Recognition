@@ -1,6 +1,8 @@
-Building traditional method for video recognition
+# Building traditional method for video recognition
 
-Pipline consists of 2 parts:
+Method: [SIFT_create](https://docs.opencv.org/3.4/d7/d60/classcv_1_1SIFT.html)
+
+Pipline consists of Feature extraction and finding similar videos
 
 # Extract Feature
 
