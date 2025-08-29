@@ -1,6 +1,6 @@
 # Building traditional method for video recognition
 
-Subject at PTIT: "Hệ cơ sở dữ liệu đa phương tiện (Thầy Hóa)"
+Subject at PTIT: **Hệ cơ sở dữ liệu đa phương tiện (Thầy Hóa)"**
 
 Method: [SIFT_create](https://docs.opencv.org/3.4/d7/d60/classcv_1_1SIFT.html)
 
