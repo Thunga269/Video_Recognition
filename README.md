@@ -1,6 +1,10 @@
-1. **Trích rút đặc trưng** 
+Building traditional method for video recognition
 
-directory_path = r'D:\thầy Hóa\dataset' là đường dẫn folder video dạng sau:
+Pipline consists of 2 parts:
+
+# Extract Feature
+
+Directory_path:
 
 dataset
 
@@ -36,11 +40,11 @@ dataset
 
 read_files_in_directory(directory_path)
 
-2. **Tìm kiếm video**
+# Search video
 
-query_image là ảnh đầu vào
+query_image is input image
 
-directory_feature = r'D:\thầy Hóa\features'  là đường dẫn folder video dạng sau:
+Directory_feature:
 
 features
 
